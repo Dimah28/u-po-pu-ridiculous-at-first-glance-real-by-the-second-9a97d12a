@@ -16,15 +16,20 @@ ENTRY = "We bottle the air from the street you grew up on, seal it in a $29 jar,
 MAX_CHARS = 200
 
 
+def validate_entry(text: str) -> None:
+    if not (1 <= len(text) <= MAX_CHARS):
+        raise ValueError(f"entry must be 1-{MAX_CHARS} characters, got {len(text)}")
+    if "\n" in text or "\r" in text:
+        raise ValueError("entry must be a single line")
+    if not text.strip():
+        raise ValueError("entry must not be only whitespace")
+
+
 def main() -> int:
-    if not (1 <= len(ENTRY) <= MAX_CHARS):
-        print(f"entry must be 1-{MAX_CHARS} characters, got {len(ENTRY)}", file=sys.stderr)
-        return 1
-    if "\n" in ENTRY or "\r" in ENTRY:
-        print("entry must be a single line", file=sys.stderr)
-        return 1
-    if not ENTRY.strip():
-        print("entry must not be only whitespace", file=sys.stderr)
+    try:
+        validate_entry(ENTRY)
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
         return 1
 
     output_dir = os.environ.get("MAKEFUN_OUTPUT_DIR", "output")
